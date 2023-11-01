@@ -3,6 +3,7 @@ import { View, Text, Button, FlatList, SectionList } from "react-native";
 import { Card } from "../../components/Card";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const DATA=[
     {
@@ -44,9 +45,17 @@ export default function Home(){
     // },[]);
 
     useEffect(()=>{
-        axios.get('https://jsonplaceholder.typicode.com/users').then((res => setData(res.data)))
-        .catch(err=>console.warn(err));
+        axios.get('https://jsonplaceholder.typicode.com/users').then(res => {
+            setData(res.data);
+            saveData(res.data);
+        }).catch(err=>console.warn(err));
     },[]);
+
+    async function saveData(json){
+        const string = JSON.stringify(json);
+        await AsyncStorage.setItem('@myapp:users',string);
+        alert('Usuários salvos na memória');
+    }
 
     return(
         <View className="flex-1 items-center justify-center">
